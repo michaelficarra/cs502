@@ -6,11 +6,10 @@
 
 int main(int argc, char* argv[]) {
 
-	int i, pid;
-	char cmd[129];
+	int pid;
 	struct timeval starttime, endtime;
 
-	gettimeofday(&starttime,NULL);
+	gettimeofday(&starttime, NULL);
 
 	pid = fork();
 	if(pid<0) {
@@ -23,7 +22,7 @@ int main(int argc, char* argv[]) {
 		gettimeofday(&endtime, NULL);
 
 		struct rusage stats;
-		getrusage(RUSAGE_CHILDREN,&stats);
+		getrusage(RUSAGE_CHILDREN, &stats);
 
 		long int secs, usecs;
 		usecs = endtime.tv_usec - starttime.tv_usec;
@@ -33,30 +32,31 @@ int main(int argc, char* argv[]) {
 			secs--;
 		}
 
-		printf("  ---\n");
+		printf(" +-----\n");
 		printf(
-			"  Wall-clock time  : %li seconds, %6li microseconds\n",
+			" | Wall-clock time  : %li seconds, %6li microseconds\n",
 			secs,
 			usecs
 			);
 		printf(
-			"  CPU time         : %li seconds, %6li microseconds\n",
+			" | CPU time         : %li seconds, %6li microseconds\n",
 			stats.ru_stime.tv_sec  + stats.ru_utime.tv_sec,
 			stats.ru_stime.tv_usec + stats.ru_utime.tv_usec
 			);
 		printf(
-			"  Context switches : %li involuntary, %li voluntary\n",
+			" | Context switches : %li involuntary, %li voluntary\n",
 			stats.ru_nivcsw,
 			stats.ru_nvcsw
 			);
 		printf(
-			"  Page faults      : %li\n",
+			" | Page faults      : %li\n",
 			stats.ru_majflt
 			);
 		printf(
-			"  Reclaimed pages  : %li\n",
+			" | Reclaimed pages  : %li\n",
 			stats.ru_minflt
 			);
+		printf(" +-----\n");
 	} else {
 		// child
 		if(argc>1) {

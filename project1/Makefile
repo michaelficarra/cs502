@@ -1,7 +1,6 @@
 # Michael Ficarra (k@wpi.edu)
-all: build test
+all: test-shell
 
-build: doit # shell shell2
 doit: doit.c
 	gcc -o ./doit ./doit.c
 shell: shell.c
@@ -9,7 +8,6 @@ shell: shell.c
 shell2: shell2.c
 	gcc -o ./shell2 shell2.c
 
-test: test-doit
 test-doit: doit
 	./doit ls -bhlpq --color=auto
 test-shell: doit shell

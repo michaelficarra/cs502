@@ -1,0 +1,11 @@
+ls -bhlpq --color=auto
+cd ../..
+ls
+sleeep 1.5
+cd /
+ls 	 -Ap
+echo               abc
+echo "def gg\bhi" \
+  "jk"
+echo a b \\\ \  c d\
+e f
