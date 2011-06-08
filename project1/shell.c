@@ -6,10 +6,12 @@
 #include <string.h>
 #include <errno.h>
 
-#define TRUE  1
-#define FALSE 0
-#define YES   1
-#define NO    0
+#define true  1
+#define false 0
+#define yes   1
+#define no    0
+typedef unsigned int bool;
+
 #define DEBUG 0
 #define MAX_LINE 4096
 #define MAX_ARG  256
@@ -19,7 +21,7 @@ int main(int argc, char* argv[]) {
 	int i, l, a, pid;
 	char c, quoteType, cwd[4096], inputStr[MAX_LINE + 1];
 	char* args[33];
-	int/* bool */inQuotes, escaped, piped = !isatty(fileno(stdin));
+	bool inQuotes, escaped, piped = !isatty(fileno(stdin));
 
 	getcwd(cwd, 4096);
 
@@ -27,7 +29,7 @@ int main(int argc, char* argv[]) {
 		printf("==> ");
 
 		inputStr[0] = '\0';
-		inQuotes = escaped = NO;
+		inQuotes = escaped = no;
 		readInput: while(c = getchar()) {
 			if(piped && (c >= ' ' && c <= '~' || c == '\n' || c == '\r')) putchar(c);
 			switch(c) {
@@ -39,10 +41,10 @@ int main(int argc, char* argv[]) {
 				case '\'':
 					if(!escaped)
 						if(!inQuotes) {
-							inQuotes = YES;
+							inQuotes = yes;
 							quoteType = c;
 						} else {
-							if(quoteType == c) inQuotes = NO;
+							if(quoteType == c) inQuotes = no;
 						}
 					strncat(inputStr, &c, 1);
 					break;
@@ -57,10 +59,10 @@ int main(int argc, char* argv[]) {
 					c = inputStr[i];
 					if((c == '"' || c == '\'') && !(i > 0 && inputStr[i - 1] == '\\' && i > 1 && inputStr[i - 2] != '\\')) {
 						if(!inQuotes) {
-							inQuotes = YES;
+							inQuotes = yes;
 							quoteType = c;
 						} else {
-							if(quoteType == c) inQuotes = NO;
+							if(quoteType == c) inQuotes = no;
 						}
 					} else if(c == '\\') {
 						escaped = !escaped;
@@ -74,7 +76,7 @@ int main(int argc, char* argv[]) {
 				default:
 					strncat(inputStr, &c, 1);
 			}
-			escaped = NO;
+			escaped = no;
 		}
 		breakReadInput:
 
@@ -88,7 +90,7 @@ int main(int argc, char* argv[]) {
 		args[1] = malloc(sizeof(char) * (MAX_ARG + 1));
 		args[1][0] = '\0';
 
-		inQuotes = escaped = NO;
+		inQuotes = escaped = no;
 		l = strlen(inputStr);
 		a = 1;
 		parseInput: for(i = 0; i < l; i++) {
@@ -97,11 +99,11 @@ int main(int argc, char* argv[]) {
 				case '\'':
 					if(!escaped)
 						if(!inQuotes) {
-							inQuotes = YES;
+							inQuotes = yes;
 							quoteType = c;
 						} else {
 							if(quoteType == c) {
-								inQuotes = NO;
+								inQuotes = no;
 								args[++a] = malloc(sizeof(char) * (MAX_ARG + 1));
 								args[a][0] = '\0';
 							}
@@ -133,7 +135,7 @@ int main(int argc, char* argv[]) {
 					if(escaped) strncat(args[a], "\\", 1);
 					strncat(args[a], &c, 1);
 			}
-			escaped = NO;
+			escaped = no;
 		}
 		breakParseInput:
 
@@ -163,14 +165,14 @@ int main(int argc, char* argv[]) {
 			printf("Forking error occured.\n");
 			return 1;
 		} else if(pid) {
-			wait(pid);
+			wait();
 		} else {
 			execvp(args[0], args);
 			printf("Execution failed with error code %d.\n", errno);
 			return 1;
 		}
 
-	} while(TRUE);
+	} while(true);
 	breakRepl:
 
 	return 0;
