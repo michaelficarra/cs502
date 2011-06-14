@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define true  1
 #define false 0
@@ -18,20 +20,20 @@ typedef unsigned int bool;
 
 int main(int argc, char* argv[]) {
 
-	int i, l, a, pid;
+	int i, l, a, pid, throwaway;
 	char c, quoteType, cwd[4096], inputStr[MAX_LINE + 1];
 	char* args[33];
 	bool inQuotes, escaped, piped = !isatty(fileno(stdin));
 
 	getcwd(cwd, 4096);
 
-	repl: do {
+	do {
 		printf("==> ");
 
 		inputStr[0] = '\0';
 		inQuotes = escaped = no;
-		readInput: while(c = getchar()) {
-			if(piped && (c >= ' ' && c <= '~' || c == '\n' || c == '\r')) putchar(c);
+		while((c = getchar())) {
+			if(piped && ((c >= ' ' && c <= '~') || c == '\n' || c == '\r')) putchar(c);
 			switch(c) {
 				case EOF :
 					if(strcmp(inputStr, "") != 0) continue;
@@ -39,13 +41,14 @@ int main(int argc, char* argv[]) {
 					goto breakRepl;
 				case '"' :
 				case '\'':
-					if(!escaped)
+					if(!escaped) {
 						if(!inQuotes) {
 							inQuotes = yes;
 							quoteType = c;
 						} else {
 							if(quoteType == c) inQuotes = no;
 						}
+					}
 					strncat(inputStr, &c, 1);
 					break;
 				case '\r':
@@ -93,11 +96,11 @@ int main(int argc, char* argv[]) {
 		inQuotes = escaped = no;
 		l = strlen(inputStr);
 		a = 1;
-		parseInput: for(i = 0; i < l; i++) {
+		for(i = 0; i < l; i++) {
 			switch(c = inputStr[i]) {
 				case '"' :
 				case '\'':
-					if(!escaped)
+					if(!escaped) {
 						if(!inQuotes) {
 							inQuotes = yes;
 							quoteType = c;
@@ -108,6 +111,7 @@ int main(int argc, char* argv[]) {
 								args[a][0] = '\0';
 							}
 						}
+					}
 					break;
 				case ' ' :
 				case '\t':
@@ -137,7 +141,6 @@ int main(int argc, char* argv[]) {
 			}
 			escaped = no;
 		}
-		breakParseInput:
 
 		if(strcmp(args[1], "") == 0) continue;
 
@@ -165,7 +168,7 @@ int main(int argc, char* argv[]) {
 			printf("Forking error occured.\n");
 			return 1;
 		} else if(pid) {
-			wait();
+			waitpid(pid, &throwaway, 0);
 		} else {
 			execvp(args[0], args);
 			printf("Execution failed with error code %d.\n", errno);

@@ -1,12 +1,15 @@
 /* Michael Ficarra (k@wpi.edu) */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/resource.h>
 
 int main(int argc, char* argv[]) {
 
-	int pid;
+	int pid, throwaway;
 	struct timeval starttime, endtime;
 
 	gettimeofday(&starttime, NULL);
@@ -18,7 +21,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	} else if(pid) {
 		// parent
-		wait(pid);
+		waitpid(pid, &throwaway, 0);
 		gettimeofday(&endtime, NULL);
 
 		struct rusage stats;

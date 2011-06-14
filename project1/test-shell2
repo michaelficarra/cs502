@@ -1,3 +1,13 @@
-sleep 30 &
-sleep 20 &
-sleep 15 &
+sleep 9 &
+sleep 6 &
+sleep 2 &
+jobs
+sleep 4
+jobs
+sleep 2
+sleep 2
+jobs
+jobs
+sleep 3
+jobs
+jobs

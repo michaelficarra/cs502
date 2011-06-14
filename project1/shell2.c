@@ -26,6 +26,7 @@ typedef struct Process {
 	int  pid;
 	int  jobId;
 	Time startTime;
+	Time endTime;
 } Process;
 
 typedef struct ProcessList {
@@ -139,13 +140,13 @@ int main(int argc, char* argv[]) {
 
 	getcwd(cwd, 4096);
 
-	repl: do {
+	do {
 		printf("==> ");
 
 		inputStr = (char*) malloc(MAX_LINE * sizeof(char));
 		inQuotes = escaped = no;
-		readInput: while(c = getchar()) {
-			if(piped && (c >= ' ' && c <= '~' || c == '\n' || c == '\r')) putchar(c);
+		while((c = getchar())) {
+			if(piped && ((c >= ' ' && c <= '~') || c == '\n' || c == '\r')) putchar(c);
 			switch(c) {
 				case EOF :
 					if(strcmp(inputStr, "")) continue;
@@ -153,13 +154,14 @@ int main(int argc, char* argv[]) {
 					goto breakRepl;
 				case '"' :
 				case '\'':
-					if(!escaped)
+					if(!escaped) {
 						if(!inQuotes) {
 							inQuotes = yes;
 							quoteType = c;
 						} else {
 							if(quoteType == c) inQuotes = no;
 						}
+					}
 					strncat(inputStr, &c, 1);
 					break;
 				case '\r':
@@ -203,11 +205,11 @@ int main(int argc, char* argv[]) {
 		inQuotes = escaped = no;
 		l = strlen(inputStr);
 		a = 0;
-		parseInput: for(i = 0; i < l; i++) {
+		for(i = 0; i < l; i++) {
 			switch(c = inputStr[i]) {
 				case '"' :
 				case '\'':
-					if(!escaped)
+					if(!escaped) {
 						if(!inQuotes) {
 							inQuotes = yes;
 							quoteType = c;
@@ -218,6 +220,7 @@ int main(int argc, char* argv[]) {
 								args[a][0] = '\0';
 							}
 						}
+					}
 					break;
 				case ' ' :
 				case '\t':
@@ -247,16 +250,14 @@ int main(int argc, char* argv[]) {
 			}
 			escaped = no;
 		}
-		breakParseInput:
 
-		while(pid = waitpid(WAIT_ANY, &status, WNOHANG)) {
+		while((pid = waitpid(WAIT_ANY, &status, WNOHANG))) {
 			if(pid < 0) break;
 			bgProc = getJob(jobs, pid);
-			if(bgProc == NULL) return; // just in case
+			if(bgProc == NULL) break; // just in case
 			printf("[%d] %d %s\n", bgProc->jobId, bgProc->pid, bgProc->cmdStr);
 			removeJob(&jobs, pid);
-			gettimeofday(&endTime, NULL);
-			printStatistics(pid, bgProc->startTime, endTime);
+			printStatistics(pid, bgProc->startTime, bgProc->endTime);
 		}
 
 		if(!strcmp(args[0], "")) continue;
@@ -296,11 +297,13 @@ int main(int argc, char* argv[]) {
 		} else if(pid) {
 			gettimeofday(&startTime, NULL);
 			if(isBgProc) {
+				gettimeofday(&endTime, NULL);
 				bgProc = (Process*) malloc(sizeof(Process));
 				bgProc->cmdStr = inputStr;
 				bgProc->pid = pid;
 				bgProc->jobId = jobId;
 				bgProc->startTime = startTime;
+				bgProc->endTime = endTime;
 				addJob(&jobs, bgProc);
 				printf("[%d] %d\n", jobId, pid);
 				++jobId;
