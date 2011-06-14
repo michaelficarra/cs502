@@ -2,3 +2,6 @@
 
 all:
 	gcc -Wall -o helloworld helloworld.c
+
+clean:
+	rm -f helloworld
