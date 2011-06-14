@@ -1,0 +1,36 @@
+diff -urN /usr/src/linux/arch/x86/include/asm/unistd_32.h linux-2.6.37.6-0.5/arch/x86/include/asm/unistd_32.h
+--- /usr/src/linux/arch/x86/include/asm/unistd_32.h	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/arch/x86/include/asm/unistd_32.h	2011-06-12 13:20:56.556031894 -0400
+@@ -346,10 +346,11 @@
+ #define __NR_fanotify_init	338
+ #define __NR_fanotify_mark	339
+ #define __NR_prlimit64		340
++#define __NR_helloworld	341
+ 
+ #ifdef __KERNEL__
+ 
+-#define NR_syscalls 341
++#define NR_syscalls 342
+ 
+ #define __ARCH_WANT_IPC_PARSE_VERSION
+ #define __ARCH_WANT_OLD_READDIR
+diff -urN /usr/src/linux/arch/x86/kernel/syscall_table_32.S linux-2.6.37.6-0.5/arch/x86/kernel/syscall_table_32.S
+--- /usr/src/linux/arch/x86/kernel/syscall_table_32.S	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/arch/x86/kernel/syscall_table_32.S	2011-06-12 12:37:31.614696057 -0400
+@@ -340,3 +340,4 @@
+ 	.long sys_fanotify_init
+ 	.long sys_fanotify_mark
+ 	.long sys_prlimit64		/* 340 */
++	.long sys_helloworld
+diff -urN /usr/src/linux/kernel/sys.c linux-2.6.37.6-0.5/kernel/sys.c
+--- /usr/src/linux/kernel/sys.c	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/kernel/sys.c	2011-06-12 12:32:23.088696006 -0400
+@@ -1806,3 +1806,8 @@
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(orderly_poweroff);
++
++SYSCALL_DEFINE0(helloworld) {
++	printk(KERN_EMERG "Hello, world!\n");
++	return 0;
++}
