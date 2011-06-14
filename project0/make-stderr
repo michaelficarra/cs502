@@ -1,0 +1,183 @@
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/kernel/async.c: In function ‘async_synchronize_cookie_domain’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/kernel/async.c:270:10: warning: ‘starttime.tv64’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/kernel/async.c: In function ‘async_run_entry_fn’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/kernel/async.c:122:10: warning: ‘calltime.tv64’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/mm/swapfile.c: In function ‘sys_swapon’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/mm/swapfile.c:1901:11: warning: ‘span’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/mm/migrate.c: In function ‘migrate_pages’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/mm/migrate.c:903:6: warning: ‘rc’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/kernel/module.c: In function ‘mod_sysfs_setup’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/kernel/module.c:1572:1: warning: label ‘out_remove_attrs’ defined but not used
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess.h:571:0,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/os.h:21,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/sound_config.h:20,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/sb_audio.c:27:
+In function ‘copy_from_user’,
+    inlined from ‘sb16_copy_from_user’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/sb_audio.c:875:22:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘sb16_copy_from_user’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/sb_audio.c:905:22:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/base/power/main.c: In function ‘pm_noirq_op’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/base/power/main.c:306:10: warning: ‘calltime.tv64’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/pss.c: In function ‘configure_nonsound_components’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/sound/oss/pss.c:676:2: warning: ‘check_region’ is deprecated (declared at /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/ioport.h:170)
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/DAC960.c: In function ‘DAC960_V2_ProcessCompletedCommand’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/DAC960.c:5094:30: warning: comparison between ‘DAC960_V2_IOCTL_Opcode_T’ and ‘enum <anonymous>’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c: In function ‘dev_show_unique_id’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[0]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[1]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[2]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[3]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[4]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[5]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[6]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[7]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[8]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[9]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[10]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[11]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[12]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[13]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[14]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/cciss.c:579:7: warning: ‘sn[15]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/DAC960.c: In function ‘DAC960_V1_EnableMemoryMailboxInterface’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/io.h:64:1: warning: ‘CommandMailbox.Bytes[12]’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/block/DAC960.c:1174:30: note: ‘CommandMailbox.Bytes[12]’ was declared here
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/gfs2/inode.c: In function ‘gfs2_lookup_by_inum’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/gfs2/inode.c:208:16: warning: ‘inode’ may be used uninitialized in this function
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess.h:571:0,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/sections.h:5,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/hw_irq.h:26,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/irq.h:210,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/hardirq.h:5,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/hardirq.h:7,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/interrupt.h:12,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:135:
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:878:20:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1142:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1249:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1271:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1295:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1318:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1341:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1362:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1383:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1404:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1431:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_if_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1467:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_thread_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1791:20:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+In function ‘copy_from_user’,
+    inlined from ‘pktgen_thread_write’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/core/pktgen.c:1822:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/econet/af_econet.c: In function ‘econet_sendmsg’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/econet/af_econet.c:494:2: warning: label ‘error’ defined but not used
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/econet/af_econet.c:268:15: warning: unused variable ‘sk’
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess.h:571:0,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/drm/drmP.h:65,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/gpu/drm/radeon/radeon_state.c:30:
+In function ‘copy_from_user’,
+    inlined from ‘radeon_cp_clear’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/gpu/drm/radeon/radeon_state.c:2171:6:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/ipv4/netfilter/nf_nat_standalone.c: In function ‘nf_nat_fn’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/ipv4/netfilter/nf_nat_standalone.c:118:2: warning: case value ‘4’ not in enumerated type ‘enum ip_conntrack_info’
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess.h:571:0,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/poll.h:14,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/novfs/nwcapi.c:21:
+In function ‘copy_from_user’,
+    inlined from ‘novfs_open_conn_by_addr’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/novfs/nwcapi.c:148:9:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/gpu/drm/radeon/r100.c: In function ‘r100_bandwidth_update’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/gpu/drm/radeon/r100.c:2668:50: warning: ‘disp_drain_rate.full’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/gpu/drm/radeon/r100.c:2614:63: warning: ‘crit_point_ff.full’ may be used uninitialized in this function
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/ipv4/netfilter/ipt_CLUSTERIP.c: In function ‘clusterip_tg’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/ipv4/netfilter/ipt_CLUSTERIP.c:329:3: warning: case value ‘4’ not in enumerated type ‘enum ip_conntrack_info’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/md/dm-mpath.c: In function ‘free_pgpaths’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/md/dm-mpath.c:161:20: warning: unused variable ‘m’
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess.h:571:0,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/net/checksum.h:25,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/skbuff.h:28,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/if_ether.h:125,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/netdevice.h:29,
+                 from /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/packet/af_packet.c:58:
+In function ‘copy_from_user’,
+    inlined from ‘packet_getsockopt’ at /home/michael/projects/kernel/linux-2.6.37.6-0.5/net/packet/af_packet.c:2126:21:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/arch/x86/include/asm/uaccess_32.h:212:26: warning: call to ‘copy_from_user_overflow’ declared with attribute warning: copy_from_user() buffer size is not provably correct
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/message/fusion/mptsas.c: In function ‘mptsas_event_process’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/message/fusion/mptsas.c:5012:9: warning: unused variable ‘log_info’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/xfs/xfs_dir2_block.c: In function ‘xfs_dir2_sf_to_block’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/xfs/xfs_dir2_block.c:1151:26: warning: array subscript is above array bounds
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/xfs/xfs_dir2_leaf.c: In function ‘xfs_dir2_leaf_compact’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/fs/xfs/xfs_dir2_leaf.c:622:31: warning: array subscript is above array bounds
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/netfilter/nf_conntrack_netlink.c: In function ‘ctnetlink_parse_tuple’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/net/netfilter/nf_conntrack_netlink.c:790:11: warning: comparison between ‘enum ctattr_tuple’ and ‘enum ctattr_type’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/misc/lkdtm.c: In function ‘lkdtm_do_action’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/misc/lkdtm.c:297:4: warning: array subscript is above array bounds
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/sfc/mcdi_mac.c: In function ‘efx_mcdi_set_mac’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/sfc/mcdi_mac.c:36:2: warning: case value ‘3’ not in enumerated type ‘enum efx_fc_type’
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/tokenring/smctr.c:43:0:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/mca-legacy.h:12:2: warning: #warning "MCA legacy - please move your driver to the new sysfs api"
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/usb/hso.c: In function ‘hso_serial_ioctl’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/usb/hso.c:1744:15: warning: unused variable ‘uarg’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/libsas/sas_scsi_host.c: In function ‘sas_scsi_task_done’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/libsas/sas_scsi_host.c:116:3: warning: case value ‘2’ not in enumerated type ‘enum exec_status’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/libsas/sas_ata.c: In function ‘sas_to_ata_err’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/libsas/sas_ata.c:74:3: warning: case value ‘2’ not in enumerated type ‘enum exec_status’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c: In function ‘mvs_task_exec’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c:981:3: warning: case value ‘5’ not in enumerated type ‘enum sas_protocol’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c: In function ‘mvs_update_phyinfo’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c:1206:34: warning: comparison between ‘enum sas_device_type’ and ‘enum sas_dev_type’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c:1209:39: warning: comparison between ‘enum sas_device_type’ and ‘enum sas_dev_type’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c: In function ‘mvs_slot_err’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c:1804:2: warning: case value ‘5’ not in enumerated type ‘enum sas_protocol’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c: In function ‘mvs_slot_complete’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/mvsas/mv_sas.c:1909:2: warning: case value ‘5’ not in enumerated type ‘enum sas_protocol’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/wireless/iwlwifi/iwl-3945.c:409:13: warning: ‘iwl3945_good_plcp_health’ defined but not used
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/qla2xxx/qla_nx.c: In function ‘qla82xx_start_scsi’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/qla2xxx/qla_nx.c:2530:12: warning: array subscript is above array bounds
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/wireless/prism54/isl_ioctl.c: In function ‘prism54_ioctl’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/net/wireless/prism54/isl_ioctl.c:2733:14: warning: array subscript is above array bounds
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/advansys.c:72:2: warning: #warning this driver is still not properly converted to the DMA API
+In file included from /home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aha1542.c:41:0:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/include/linux/mca-legacy.h:12:2: warning: #warning "MCA legacy - please move your driver to the new sysfs api"
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aic7xxx_old.c: In function ‘aic7xxx_register’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aic7xxx_old.c:7901:5: warning: case value ‘257’ not in enumerated type ‘ahc_chip’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aic7xxx_old.c:7898:5: warning: case value ‘513’ not in enumerated type ‘ahc_chip’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aic7xxx_old.c: In function ‘aic7xxx_load_seeprom’:
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aic7xxx_old.c:8517:5: warning: case value ‘257’ not in enumerated type ‘ahc_chip’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/scsi/aic7xxx_old.c:8510:5: warning: case value ‘513’ not in enumerated type ‘ahc_chip’
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/video/s1d13xxxfb.c:421:1: warning: ‘bltbit_wait_bitset’ defined but not used
+/home/michael/projects/kernel/linux-2.6.37.6-0.5/drivers/video/s1d13xxxfb.c:464:1: warning: ‘bltbit_fifo_status’ defined but not used
+Root device is (8, 2)
+Setup is 14540 bytes (padded to 14848 bytes).
+System is 3005 kB
+CRC 1882abc1
+WARNING: modpost: Found 1 section mismatch(es).
+To see full details build your kernel with:
+'make CONFIG_DEBUG_SECTION_MISMATCH=y'
