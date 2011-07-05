@@ -1,0 +1,21 @@
+Michael Ficarra (k@wpi.edu)
+
+The program takes 3 non-negative integral arguments representing average
+arrival time, average stay time, and average loop count respectively. To cause
+the bathroom to change genders frequently, use a larger number like 50 for the
+first argument and a smaller number like 2 for the second argument. All
+arguments must be non-negative and the final argument must also be non-zero.
+
+Example: make && ./project3 50 2 5
+
+No thread can enter the bathroom when a member of the other sex is in the
+bathroom because it can disallow traffic in/out of the bathroom through the use
+of the "doorLock" mutex while it checks both the number and gender of bathroom
+users. In the case that the thread's gender is the same as the bathroom's or
+the bathroom is empty, the thread enters the bathroom, converts the bathroom to
+its gender, and re-permits bathroom traffic. The bathroom queue is handle by
+the "bathroomOccupants" semaphore, which is posted or waited upon when someone
+is entering or leaving the bathroom and has the "doorLock" mutex.
+
+Statistics printouts are kept together by requiring that a thread hold the
+"printLock" mutex while it prints them and release it when it's done.
