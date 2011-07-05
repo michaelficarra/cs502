@@ -1,0 +1,167 @@
+diff -urN /usr/src/linux/arch/x86/include/asm/unistd_32.h linux-2.6.37.6-0.5/arch/x86/include/asm/unistd_32.h
+--- /usr/src/linux/arch/x86/include/asm/unistd_32.h	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/arch/x86/include/asm/unistd_32.h	2011-06-17 20:39:23.537728008 -0400
+@@ -346,10 +346,12 @@
+ #define __NR_fanotify_init	338
+ #define __NR_fanotify_mark	339
+ #define __NR_prlimit64		340
++#define __NR_helloworld	341
++#define __NR_getprinfo		342
+ 
+ #ifdef __KERNEL__
+ 
+-#define NR_syscalls 341
++#define NR_syscalls 343
+ 
+ #define __ARCH_WANT_IPC_PARSE_VERSION
+ #define __ARCH_WANT_OLD_READDIR
+diff -urN /usr/src/linux/arch/x86/kernel/syscall_table_32.S linux-2.6.37.6-0.5/arch/x86/kernel/syscall_table_32.S
+--- /usr/src/linux/arch/x86/kernel/syscall_table_32.S	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/arch/x86/kernel/syscall_table_32.S	2011-06-17 21:28:05.329727985 -0400
+@@ -340,3 +340,5 @@
+ 	.long sys_fanotify_init
+ 	.long sys_fanotify_mark
+ 	.long sys_prlimit64		/* 340 */
++	.long sys_helloworld
++	.long sys_getprinfo
+diff -urN /usr/src/linux/include/linux/prinfo.h linux-2.6.37.6-0.5/include/linux/prinfo.h
+--- /usr/src/linux/include/linux/prinfo.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.37.6-0.5/include/linux/prinfo.h	2011-06-18 00:34:46.552000985 -0400
+@@ -0,0 +1,25 @@
++// CS-502 (Sun), Project 2, Part 2 -- Getting process info
++
++#ifndef _LINUX_PRINFO_H
++#define _LINUX_PRINFO_H
++
++#include <linux/types.h>
++#include <linux/pid.h>
++
++struct prinfo {
++    long state;			// current state of process
++    pid_t pid;			// process ID of this process
++    pid_t parent_pid;		// process ID of parent
++    pid_t youngest_child;	// process ID of youngest child
++    pid_t younger_sibling;	// process ID of next younger sibling
++    pid_t older_sibling;		// process ID of next older sibling
++    uid_t uid;			// user ID of process owner
++    char comm[16];		// name of program executed
++    unsigned long start_time;	// process start time in seconds since the Epoch
++    unsigned long user_time;	// CPU time spent in user mode (milliseconds)
++    unsigned long sys_time;	// CPU time spend in system mode (milliseconds)
++    unsigned long cutime;	// total user time of children (milliseconds)
++    unsigned long cstime;	// total system time of children (milliseconds)
++};
++
++#endif
+diff -urN /usr/src/linux/kernel/Makefile linux-2.6.37.6-0.5/kernel/Makefile
+--- /usr/src/linux/kernel/Makefile	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/kernel/Makefile	2011-06-18 01:13:45.960001241 -0400
+@@ -10,7 +10,7 @@
+ 	    kthread.o wait.o kfifo.o sys_ni.o posix-cpu-timers.o mutex.o \
+ 	    hrtimer.o rwsem.o nsproxy.o srcu.o semaphore.o \
+ 	    notifier.o ksysfs.o pm_qos_params.o sched_clock.o cred.o \
+-	    async.o range.o jump_label.o
++	    async.o range.o jump_label.o prinfo.o
+ obj-y += groups.o
+ 
+ ifdef CONFIG_FUNCTION_TRACER
+diff -urN /usr/src/linux/kernel/prinfo.c linux-2.6.37.6-0.5/kernel/prinfo.c
+--- /usr/src/linux/kernel/prinfo.c	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.37.6-0.5/kernel/prinfo.c	2011-06-23 22:45:06.147071006 -0400
+@@ -0,0 +1,84 @@
++/* Michael Ficarra (k@wpi.edu) */
++
++#include <linux/syscalls.h>
++#include <asm/unistd.h>
++#include <linux/unistd.h>
++#include <asm/current.h>
++#include <linux/sched.h>
++#include <linux/prinfo.h>
++#include <linux/list.h>
++#include <linux/string.h>
++#include <asm/div64.h>
++
++SYSCALL_DEFINE1(getprinfo, int *, info) {
++	struct prinfo kinfo;
++	struct task_struct *ts, *parent, *curr, *best;
++	unsigned int utime, stime;
++	pid_t ppid = -1, youngest_child = -1, younger_sibling = -1, older_sibling = -1;
++
++	ts = current;
++
++	// kinfo.parent_pid
++	parent = ts->parent;
++	if(parent) ppid = parent->pid;
++
++	// kinfo.youngest_child
++	best = ts;
++	list_for_each_entry(curr, &ts->children, sibling) {
++		if(curr->parent != ts) continue; // sanity check
++		if(timespec_compare(&curr->start_time, &best->start_time) >= 0)
++			best = curr;
++	}
++	if(best != ts) youngest_child = best->pid;
++
++	// kinfo.younger_sibling
++	/*
++	if(ts->sibling.prev != NULL && ts->sibling.prev != &ts->sibling)
++		younger_sibling = list_entry(ts->sibling.prev, typeof(*curr), sibling)->pid;
++	*/
++	best = NULL;
++	list_for_each_entry(curr, &ts->sibling, sibling) {
++		if(curr->parent != ts->parent) continue; // sanity check
++		if(timespec_compare(&curr->start_time, &ts->start_time) > 0
++		&& (best ? timespec_compare(&curr->start_time, &best->start_time) < 0 : true))
++			best = curr;
++	}
++	if(best != NULL) younger_sibling = best->pid;
++
++	// kinfo.older_sibling
++	/*
++	if(ts->sibling.next != NULL && ts->sibling.next != &ts->sibling)
++		older_sibling = list_entry(ts->sibling.next, typeof(*curr), sibling)->pid;
++	*/
++	best = NULL;
++	list_for_each_entry(curr, &ts->sibling, sibling) {
++		if(curr->parent != ts->parent) continue; // sanity check
++		if(timespec_compare(&curr->start_time, &ts->start_time) < 0
++		&& (best ? timespec_compare(&curr->start_time, &best->start_time) > 0 : true))
++			best = curr;
++	}
++	if(best != NULL) older_sibling = best->pid;
++
++
++	kinfo.state           = ts->state;
++	kinfo.pid             = ts->pid;
++	kinfo.parent_pid      = ppid;
++	kinfo.youngest_child  = youngest_child;
++	kinfo.younger_sibling = younger_sibling;
++	kinfo.older_sibling   = older_sibling;
++	kinfo.uid             = ts->loginuid;
++	strncpy(kinfo.comm, ts->comm, 15);
++	kinfo.comm[15] = '\0';
++	kinfo.start_time      = ts->real_start_time.tv_sec;
++	utime = cputime_to_usecs(ts->utime);
++	kinfo.user_time       = do_div(utime, USEC_PER_MSEC);
++	stime = cputime_to_usecs(ts->stime);
++	kinfo.sys_time        = do_div(stime, USEC_PER_MSEC);
++	utime = cputime_to_usecs(ts->signal->cutime);
++	kinfo.cutime          = do_div(utime, USEC_PER_MSEC);
++	stime = cputime_to_usecs(ts->signal->cstime);
++	kinfo.cstime          = do_div(stime, USEC_PER_MSEC);
++
++	if(copy_to_user(info, &kinfo, sizeof kinfo)) return -EFAULT;
++	return 0;
++}
+diff -urN /usr/src/linux/kernel/sys.c linux-2.6.37.6-0.5/kernel/sys.c
+--- /usr/src/linux/kernel/sys.c	2011-04-25 15:48:33.000000000 -0400
++++ linux-2.6.37.6-0.5/kernel/sys.c	2011-06-18 04:28:53.176001479 -0400
+@@ -1806,3 +1806,8 @@
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(orderly_poweroff);
++
++SYSCALL_DEFINE0(helloworld) {
++	printk(KERN_EMERG "Hello, world!\n");
++	return 0;
++}

@@ -1,0 +1,8 @@
+Michael Ficarra (k@wpi.edu)
+
+Everything should be working as specified in the assignment.
+From run to run, each field may change except `state`, and `comm`.
+`comm` may change, but only after a file rename. `uid` will only
+change when a different user executes the program. `start_time`
+monotonically increases, so it will never be repeat (except after
+integer overflow) as long as runs that are more than a second apart.
