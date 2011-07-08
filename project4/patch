@@ -28,7 +28,7 @@ diff -urN /usr/src/linux/arch/x86/kernel/syscall_table_32.S linux-2.6.37.6-0.5/a
 +	.long sys_mailbox_manage
 diff -urN /usr/src/linux/include/linux/mailbox.h linux-2.6.37.6-0.5/include/linux/mailbox.h
 --- /usr/src/linux/include/linux/mailbox.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.37.6-0.5/include/linux/mailbox.h	2011-07-05 02:00:15.349337001 -0400
++++ linux-2.6.37.6-0.5/include/linux/mailbox.h	2011-07-06 20:52:23.509638003 -0400
 @@ -0,0 +1,64 @@
 +/**
 +* Adapted from CS-502 Project #3, Fall 2006
@@ -63,7 +63,7 @@ diff -urN /usr/src/linux/include/linux/mailbox.h linux-2.6.37.6-0.5/include/linu
 +typedef struct CS3013_message {
 +	struct list_head list;
 +	pid_t sender_pid;
-+	char text[MAX_MSG_SIZE + 1];
++	char text[MAX_MSG_SIZE];
 +	int length;
 +} CS3013_message;
 +
@@ -204,8 +204,8 @@ diff -urN /usr/src/linux/kernel/fork.c linux-2.6.37.6-0.5/kernel/fork.c
 Binary files /usr/src/linux/kernel/.fork.c.swp and linux-2.6.37.6-0.5/kernel/.fork.c.swp differ
 diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 --- /usr/src/linux/kernel/mailbox.c	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.37.6-0.5/kernel/mailbox.c	2011-07-05 02:20:51.413337001 -0400
-@@ -0,0 +1,105 @@
++++ linux-2.6.37.6-0.5/kernel/mailbox.c	2011-07-08 16:27:02.104692008 -0400
+@@ -0,0 +1,102 @@
 +/* Michael Ficarra (k@wpi.edu) */
 +
 +#include <linux/syscalls.h>
@@ -220,20 +220,16 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +// int SendMsg(pid_t dest, void *msg, int len, bool block);
 +SYSCALL_DEFINE4(mailbox_send, pid_t, dest_pid, void *, usr_msg, int, len, bool, block) {
 +	CS3013_message *msg;
-+	int msg_length;
 +	struct task_struct *dest = find_task_by_vpid(dest_pid);
 +
 +	if(dest == NULL || dest->mailbox == NULL) return MAILBOX_INVALID;
 +	if(dest->mailbox->stopped) return MAILBOX_STOPPED;
-+
-+	msg_length = strnlen(usr_msg, MAX_MSG_SIZE + 1);
-+	if(msg_length > MAX_MSG_SIZE) return MSG_TOO_LONG;
++	if(len > MAX_MSG_SIZE) return MSG_TOO_LONG;
 +
 +	msg = alloc_CS3013_message();
-+	if(copy_from_user(&msg->text, usr_msg, MAX_MSG_SIZE))
++	if(copy_from_user(&msg->text, usr_msg, len))
 +		return MSG_ARG_ERROR;
-+	msg->text[MAX_MSG_SIZE] = '\0';
-+	msg->length = msg_length;
++	msg->length = len;
 +	msg->sender_pid = current->pid;
 +	INIT_LIST_HEAD(&msg->list);
 +
@@ -291,17 +287,18 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +	}
 +
 +	msg = list_entry(self->mailbox->messages, struct CS3013_message, list);
-+	// TODO: move copy_to_user calls outside spinlock
-+	copy_to_user(&msg->text, usr_msg, MAX_MSG_SIZE + 1);
-+	copy_to_user(&msg->sender_pid, sender_pid, sizeof(pid_t));
-+	copy_to_user(&msg->length, usr_msg_len, sizeof(int));
 +	empty = msg->list.next == &msg->list;
-+	list_del(&msg->list);
 +	if(empty) self->mailbox->messages = NULL;
-+	free_CS3013_message(msg);
++	else self->mailbox->messages = msg->list.next;
++	list_del(&msg->list);
 +
 +	up(self->mailbox->empty);
 +	spin_unlock(&self->mailbox_lock);
++
++	copy_to_user(&msg->text, usr_msg, msg->length);
++	copy_to_user(&msg->sender_pid, sender_pid, sizeof(pid_t));
++	copy_to_user(&msg->length, usr_msg_len, sizeof(int));
++	free_CS3013_message(msg);
 +
 +	return 0;
 +}
