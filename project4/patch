@@ -28,8 +28,8 @@ diff -urN /usr/src/linux/arch/x86/kernel/syscall_table_32.S linux-2.6.37.6-0.5/a
 +	.long sys_mailbox_manage
 diff -urN /usr/src/linux/include/linux/mailbox.h linux-2.6.37.6-0.5/include/linux/mailbox.h
 --- /usr/src/linux/include/linux/mailbox.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.37.6-0.5/include/linux/mailbox.h	2011-07-06 20:52:23.509638003 -0400
-@@ -0,0 +1,64 @@
++++ linux-2.6.37.6-0.5/include/linux/mailbox.h	2011-07-11 22:35:44.472000970 -0400
+@@ -0,0 +1,66 @@
 +/**
 +* Adapted from CS-502 Project #3, Fall 2006
 +*	originally submitted by Cliff Lindsay
@@ -43,8 +43,9 @@ diff -urN /usr/src/linux/include/linux/mailbox.h linux-2.6.37.6-0.5/include/linu
 +#include <stdbool.h>
 +#include <linux/types.h>
 +
-+#define NO_BLOCK 0
-+#define BLOCK   1
++#define NO_BLOCK false
++#define BLOCK    true
++
 +#define MAX_MSG_SIZE 128
 +#define CS3013_MAILBOX_SIZE 32
 +
@@ -57,7 +58,8 @@ diff -urN /usr/src/linux/include/linux/mailbox.h linux-2.6.37.6-0.5/include/linu
 +	bool stopped;
 +	struct semaphore *empty;
 +	struct semaphore *full;
-+	struct semaphore *lock;
++	int waitingSenders;
++	int waitingReceivers;
 +} CS3013_mailbox;
 +
 +typedef struct CS3013_message {
@@ -94,7 +96,6 @@ diff -urN /usr/src/linux/include/linux/mailbox.h linux-2.6.37.6-0.5/include/linu
 +
 +#endif
 +
-Binary files /usr/src/linux/include/linux/.mailbox.h.swp and linux-2.6.37.6-0.5/include/linux/.mailbox.h.swp differ
 diff -urN /usr/src/linux/include/linux/sched.h linux-2.6.37.6-0.5/include/linux/sched.h
 --- /usr/src/linux/include/linux/sched.h	2011-04-25 15:48:33.000000000 -0400
 +++ linux-2.6.37.6-0.5/include/linux/sched.h	2011-07-02 00:33:55.318164010 -0400
@@ -119,7 +120,7 @@ diff -urN /usr/src/linux/include/linux/sched.h linux-2.6.37.6-0.5/include/linux/
  	struct sighand_struct *sighand;
 diff -urN /usr/src/linux/kernel/exit.c linux-2.6.37.6-0.5/kernel/exit.c
 --- /usr/src/linux/kernel/exit.c	2011-04-25 15:48:33.000000000 -0400
-+++ linux-2.6.37.6-0.5/kernel/exit.c	2011-07-04 23:44:30.541337001 -0400
++++ linux-2.6.37.6-0.5/kernel/exit.c	2011-07-11 20:43:46.810901260 -0400
 @@ -57,6 +57,8 @@
  #include <asm/pgtable.h>
  #include <asm/mmu_context.h>
@@ -129,33 +130,48 @@ diff -urN /usr/src/linux/kernel/exit.c linux-2.6.37.6-0.5/kernel/exit.c
  static void exit_mm(struct task_struct * tsk);
  
  static void __unhash_process(struct task_struct *p, bool group_dead)
-@@ -948,6 +950,22 @@
- 		schedule();
- 	}
- 
+@@ -968,6 +970,38 @@
+ 	if (tsk->mm)
+ 		sync_mm_rss(tsk, tsk->mm);
+ 	group_dead = atomic_dec_and_test(&tsk->signal->live);
++
 +	// if a CS3013_mailbox exists
-+    if(tsk->mailbox) {
++    if(group_dead && tsk->mailbox != NULL) {
++		CS3013_message *msg, *tmp;
++		//printk(KERN_EMERG "cleaning up mailbox for %s[%d]", tsk->comm, tsk->pid);
 +		// stop CS3013_mailbox
 +		tsk->mailbox->stopped = true;
-+		// TODO: sem_post "full" semaphore for each waiting reader
++		//printk(KERN_EMERG "mailbox for %s[%d] stopped", tsk->comm, tsk->pid);
++		// up "full" semaphore for each waiting reader
++		while(tsk->mailbox->waitingReceivers > 0)
++			up(tsk->mailbox->full);
++		// up "empty" semaphore for each waiting sender
++		while(tsk->mailbox->waitingSenders > 0)
++			up(tsk->mailbox->empty);
++		//printk(KERN_EMERG "wating threads for mailbox for %s[%d] signaled", tsk->comm, tsk->pid);
++		// free unread messages
 +		if(tsk->mailbox->messages != NULL) {
-+			// TODO: free unread messages
++			list_for_each_entry_safe(msg, tmp, tsk->mailbox->messages, list) {
++				free_CS3013_message(msg);
++			}
++			//printk(KERN_EMERG "freed message in mailbox for %s[%d]", tsk->comm, tsk->pid);
 +		}
++		//printk(KERN_EMERG "freed all messages in mailbox for %s[%d]", tsk->comm, tsk->pid);
 +		// free semaphores
 +		kfree(tsk->mailbox->empty);
 +		kfree(tsk->mailbox->full);
-+		kfree(tsk->mailbox->lock);
++		//printk(KERN_EMERG "freed semaphores in mailbox for %s[%d]", tsk->comm, tsk->pid);
 +		// free CS3013_mailbox structure
 +        kfree(tsk->mailbox);
++		//printk(KERN_EMERG "freed mailbox for %s[%d]", tsk->comm, tsk->pid);
 +    }
 +
- 	exit_irq_thread();
- 
- 	exit_signals(tsk);  /* sets PF_EXITING */
-Binary files /usr/src/linux/kernel/.exit.c.swp and linux-2.6.37.6-0.5/kernel/.exit.c.swp differ
+ 	if (group_dead) {
+ 		hrtimer_cancel(&tsk->signal->real_timer);
+ 		exit_itimers(tsk->signal);
 diff -urN /usr/src/linux/kernel/fork.c linux-2.6.37.6-0.5/kernel/fork.c
 --- /usr/src/linux/kernel/fork.c	2011-04-25 15:48:33.000000000 -0400
-+++ linux-2.6.37.6-0.5/kernel/fork.c	2011-07-05 01:23:43.617337003 -0400
++++ linux-2.6.37.6-0.5/kernel/fork.c	2011-07-11 20:44:06.676901000 -0400
 @@ -76,6 +76,8 @@
  
  #include <trace/events/sched.h>
@@ -175,37 +191,47 @@ diff -urN /usr/src/linux/kernel/fork.c linux-2.6.37.6-0.5/kernel/fork.c
  	/*
  	 * The default maximum number of threads is set to a safe
  	 * value: the thread structures can take up at most half
-@@ -1453,6 +1458,25 @@
+@@ -1453,6 +1458,36 @@
  			init_completion(&vfork);
  		}
  
 +        // assign a CS3013_mailbox
-+		if(p->mm != NULL) { // unless it's a kernel thread
++		p->mailbox = NULL;
++		if(p->mm) { // unless it's a kernel thread
++			//printk(KERN_EMERG "assigning a mailbox to %s[%d]", p->comm, p->pid);
 +			if(clone_flags & CLONE_THREAD) { // just a new thread
++				//printk(KERN_EMERG "forked thread %s[%d] using mailbox of parent %s[%d]", p->comm, p->pid, current->comm, current->pid);
 +				// use parent's mailbox
 +				p->mailbox = current->mailbox;
 +			} else {
++				//printk(KERN_EMERG "creating a new mailbox for %s[%d]", p->comm, p->pid);
 +				// allocate a new mailbox
 +				p->mailbox = (CS3013_mailbox *) kmalloc(sizeof(CS3013_mailbox), GFP_KERNEL);
 +				p->mailbox->stopped = false;
-+				// initialize semaphores
++				// initialise semaphores
++				//printk(KERN_EMERG "initialising semaphores for mailbox for %s[%d]", p->comm, p->pid);
 +				p->mailbox->empty = (struct semaphore *) kmalloc(sizeof(struct semaphore), GFP_KERNEL);
 +				sema_init(p->mailbox->empty, CS3013_MAILBOX_SIZE);
 +				p->mailbox->full  = (struct semaphore *) kmalloc(sizeof(struct semaphore), GFP_KERNEL);
 +				sema_init(p->mailbox->full, 0);
-+				// initialize message list
++				// initialise waiting lists
++				//printk(KERN_EMERG "initialising waiting lists for mailbox for %s[%d]", p->comm, p->pid);
++				p->mailbox->waitingReceivers = 0;
++				p->mailbox->waitingSenders = 0;
++				// initialise message list
++				//printk(KERN_EMERG "initialising message list for mailbox for %s[%d]", p->comm, p->pid);
 +				p->mailbox->messages = NULL;
 +			}
++			//printk(KERN_EMERG "successfully assigned a mailbox to %s[%d]", p->comm, p->pid);
 +		}
 +
  		audit_finish_fork(p);
  		tracehook_report_clone(regs, clone_flags, nr, p);
  
-Binary files /usr/src/linux/kernel/.fork.c.swp and linux-2.6.37.6-0.5/kernel/.fork.c.swp differ
 diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 --- /usr/src/linux/kernel/mailbox.c	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.37.6-0.5/kernel/mailbox.c	2011-07-08 16:27:02.104692008 -0400
-@@ -0,0 +1,102 @@
++++ linux-2.6.37.6-0.5/kernel/mailbox.c	2011-07-12 01:28:04.662972014 -0400
+@@ -0,0 +1,127 @@
 +/* Michael Ficarra (k@wpi.edu) */
 +
 +#include <linux/syscalls.h>
@@ -220,9 +246,10 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +// int SendMsg(pid_t dest, void *msg, int len, bool block);
 +SYSCALL_DEFINE4(mailbox_send, pid_t, dest_pid, void *, usr_msg, int, len, bool, block) {
 +	CS3013_message *msg;
++	int downReturn;
 +	struct task_struct *dest = find_task_by_vpid(dest_pid);
 +
-+	if(dest == NULL || dest->mailbox == NULL) return MAILBOX_INVALID;
++	if(!dest || dest == NULL || dest->mailbox == NULL) return MAILBOX_INVALID;
 +	if(dest->mailbox->stopped) return MAILBOX_STOPPED;
 +	if(len > MAX_MSG_SIZE) return MSG_TOO_LONG;
 +
@@ -230,23 +257,24 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +	if(copy_from_user(&msg->text, usr_msg, len))
 +		return MSG_ARG_ERROR;
 +	msg->length = len;
-+	msg->sender_pid = current->pid;
++	msg->sender_pid = task_pid_nr(current);
 +	INIT_LIST_HEAD(&msg->list);
 +
-+	if(block) {
-+		while(down_interruptible(dest->mailbox->empty))
-+			/* do nothing */;
++	if(block == BLOCK) {
++		++dest->mailbox->waitingSenders;
++		downReturn = down_interruptible(dest->mailbox->empty);
++		--dest->mailbox->waitingSenders;
++		if(downReturn) return -ERESTARTSYS;
 +	} else {
 +		if(down_trylock(dest->mailbox->empty))
 +			return MAILBOX_FULL;
 +	}
-+	spin_lock(&dest->mailbox_lock);
-+
 +	if(dest->mailbox->stopped) {
 +		up(dest->mailbox->empty);
-+		spin_unlock(&dest->mailbox_lock);
 +		return MAILBOX_STOPPED;
 +	}
++
++	spin_lock(&dest->mailbox_lock);
 +
 +	if(dest->mailbox->messages == NULL) {
 +		dest->mailbox->messages = &msg->list;
@@ -263,23 +291,28 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +// int RcvMsg(pid_t *sender, void *msg, int *len, bool block);
 +SYSCALL_DEFINE4(mailbox_rcv, pid_t *, sender_pid, void *, usr_msg, int *, usr_msg_len, bool, block) {
 +	CS3013_message *msg;
-+	bool empty;
++	int downReturn;
 +	struct task_struct *self = current;
 +
-+	if(block) {
-+		while(down_interruptible(self->mailbox->full))
-+			/* do nothing */;
++	if(self->mailbox == NULL) return MAILBOX_INVALID;
++	if(self->mailbox->stopped) return MAILBOX_STOPPED;
++
++	if(block == BLOCK) {
++		++self->mailbox->waitingReceivers;
++		downReturn = down_interruptible(self->mailbox->full);
++		--self->mailbox->waitingReceivers;
++		if(downReturn) return -ERESTARTSYS;
 +	} else {
 +		if(down_trylock(self->mailbox->full))
 +			return MAILBOX_EMPTY;
 +	}
-+	spin_lock(&self->mailbox_lock);
-+
 +	if(self->mailbox->stopped) {
 +		up(self->mailbox->full);
-+		spin_unlock(&self->mailbox_lock);
 +		return MAILBOX_STOPPED;
 +	}
++
++	spin_lock(&self->mailbox_lock);
++
 +	// sanity check
 +	if(self->mailbox->messages == NULL) {
 +		spin_unlock(&self->mailbox_lock);
@@ -287,8 +320,7 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +	}
 +
 +	msg = list_entry(self->mailbox->messages, struct CS3013_message, list);
-+	empty = msg->list.next == &msg->list;
-+	if(empty) self->mailbox->messages = NULL;
++	if(msg->list.next == &msg->list) self->mailbox->messages = NULL;
 +	else self->mailbox->messages = msg->list.next;
 +	list_del(&msg->list);
 +
@@ -304,7 +336,26 @@ diff -urN /usr/src/linux/kernel/mailbox.c linux-2.6.37.6-0.5/kernel/mailbox.c
 +}
 +
 +// int ManageMailbox(bool stop, int *count);
-+SYSCALL_DEFINE2(mailbox_manage, bool, stop, int *, count) {
++SYSCALL_DEFINE2(mailbox_manage, bool, stop, int *, usr_count) {
++	struct task_struct *self = current;
++	struct list_head *tmp;
++	int count = 0;
++
++	printk(KERN_EMERG "syscall mailbox_manage called with count 0x%08x", usr_count);
++
++	if(self->mailbox == NULL) return MAILBOX_INVALID;
++
++	if(stop) self->mailbox->stopped = true;
++
++	if(self->mailbox->messages != NULL) {
++		++count;
++		spin_lock(&self->mailbox_lock);
++		__list_for_each(tmp, self->mailbox->messages) {
++			++count;
++		}
++		spin_unlock(&self->mailbox_lock);
++	}
++	copy_to_user(&count, usr_count, sizeof(int));
 +
 +	return 0;
 +}
