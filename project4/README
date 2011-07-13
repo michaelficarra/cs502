@@ -1,0 +1,41 @@
+Michael Ficarra (k@wpi.edu)
+
+
+Mailbox creation/deletion works fine, but I have a problem with the slab
+allocation. So whenever I attempt to send a message, I am getting a kernel oops
+that mentions kmem_cache_create. But I'm pretty confident in the logic in the
+syscalls themselves.
+
+The tests can be run via `./user` after running `make`. A successful test run will
+return 0. The tests are not fully comprehensive, as I couldn't get past the message
+allocation problem during send operations.
+
+
+Data Structures
+===============
+
+struct CS3013_mailbox:
+  * a pointer to a list_head named "messages", NULL representing the empty list
+  * bool stopped (initialised to false)
+  * two semaphores, "empty" and "full", for blocking on send/rcv operations
+    * empty initialised to CS3013_MAILBOX_SIZE, full initialized to 0
+  * counters for number of threads blocked in a send/receive operation
+    * used to determine how many times to signal the waiting threads upon exit
+
+struct CS3013_message:
+  * list_head named "list" that allows the message to be part of a list
+  * the PID of the process that sent the message
+  * MAX_MSG_SIZE block of bytes for message contents
+  * an integer length
+
+Syscalls
+========
+
+I went through the syscalls and commented every non-trivial operation.
+Well-commented code should be easier to understand than prose here.
+
+Fork / Exit
+===========
+
+Same thing, just read the modified sections of "do_fork" and "do_exit" in
+/kernel/fork.c and /kernel/exit.c respectively.
